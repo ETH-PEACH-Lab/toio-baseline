@@ -279,7 +279,7 @@ const Zone3 = ({ onNextZone }) => {
             </span>
         }
         subtitle="Upgrading to DataBot"
-        instruction={`Big news, Researchers! RuleBot has been upgraded into DataBot. He doesn't need rules anymore—he learns from patterns! But watch out, Meowth has corrupted some training packages with 'noisy' data. We need to find the clean ones! (Step ${step}/${totalSteps})`}
+        instruction={`Big news, Researchers! RuleBot has been upgraded into DataBot. He doesn't need rules anymore—he learns from patterns! But watch out, Meowth has corrupted some training packages with 'noisy' data. We need to find my clean ones! (Step ${step}/${totalSteps})`}
       />
       
       <div className="mb-5">
@@ -292,7 +292,7 @@ const Zone3 = ({ onNextZone }) => {
       </div>
 
       <div className="text-center mb-4">
-          <h3 className="fw-bold text-secondary">Step {step}: Which package is the Clean (Pure) {formatTitle(currentTypeKey)} data?</h3>
+          <h3 className="fw-bold text-secondary">Step {step}: Which package is the Clean (Professor) {formatTitle(currentTypeKey)} data?</h3>
       </div>
 
       <Row className="g-4 mb-5 pb-5">

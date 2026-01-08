@@ -34,22 +34,22 @@ const FEATURES = [
 
 // --- Data Slicing Logic ---
 const AVAILABLE_DATASETS = [
-  { id: '1', type: 'fire', label: 'Fire (Pure)', img: img1, data: trainPokemon.slice(0, 20) },
-  { id: '5', type: 'fire', label: 'Fire (Noisy)', img: img5, data: trainPokemon.slice(20, 40) },
+  { id: '1', type: 'fire', label: 'Fire (Professor)', img: img1, data: trainPokemon.slice(0, 20) },
+  { id: '5', type: 'fire', label: 'Fire (Meowth)', img: img5, data: trainPokemon.slice(20, 40) },
   
-  { id: '2', type: 'water', label: 'Water (Pure)', img: img2, data: trainPokemon.slice(40, 60) },
-  { id: '6', type: 'water', label: 'Water (Noisy)', img: img6, data: trainPokemon.slice(60, 80) },
+  { id: '2', type: 'water', label: 'Water (Professor)', img: img2, data: trainPokemon.slice(40, 60) },
+  { id: '6', type: 'water', label: 'Water (Rare!)', img: img6, data: trainPokemon.slice(60, 80) },
   
-  { id: '3', type: 'grass', label: 'Grass (Pure)', img: img3, data: trainPokemon.slice(80, 100) },
-  { id: '7', type: 'grass', label: 'Grass (Noisy)', img: img7, data: trainPokemon.slice(100, 120) },
+  { id: '3', type: 'grass', label: 'Grass (Professor)', img: img3, data: trainPokemon.slice(80, 100) },
+  { id: '7', type: 'grass', label: 'Grass (Meowth)', img: img7, data: trainPokemon.slice(100, 120) },
   
-  { id: '4', type: 'dragon', label: 'Dragon (Pure)', img: img4, data: trainPokemon.slice(120, 140) },
-  { id: '8', type: 'dragon', label: 'Dragon (Noisy)', img: img8, data: trainPokemon.slice(140, 160) },
+  { id: '4', type: 'dragon', label: 'Dragon (Professor)', img: img4, data: trainPokemon.slice(120, 140) },
+  { id: '8', type: 'dragon', label: 'Dragon (Rare!)', img: img8, data: trainPokemon.slice(140, 160) },
   
   { 
     id: '9', 
     type: 'mixed', 
-    label: 'Big Mix (Pure)', 
+    label: 'Big Mix (Professor)', 
     img: img9, 
     data: [
         ...trainPokemon.slice(0, 10),   // 10 Fire
