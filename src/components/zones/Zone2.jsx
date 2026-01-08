@@ -91,17 +91,25 @@ const Zone2 = ({ onNextZone }) => {
   };
 
   const predictType = (pokemon) => {
-      let bestType = 'fire'; // Default fallback
-      let maxScore = -1;
+    let maxScore = -1;
+    let bestTypes = [];
 
-      rulesTypes.forEach(type => {
-          const score = calculateScore(pokemon, zoneRules[type]);
-          if (score > maxScore) {
-              maxScore = score;
-              bestType = type;
-          }
-      });
-      return { type: bestType, score: maxScore };
+    rulesTypes.forEach(type => {
+      const score = calculateScore(pokemon, zoneRules[type]);
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestTypes = [type];           // reset list
+      } else if (score === maxScore) {
+        bestTypes.push(type);         // tie
+      }
+    });
+
+    
+    const chosenType =
+      bestTypes[Math.floor(Math.random() * bestTypes.length)];
+
+    return { type: chosenType, score: maxScore };
   };
 
   // --- HANDLERS ---
@@ -164,16 +172,25 @@ const Zone2 = ({ onNextZone }) => {
     const p = testPokemon[Math.floor(Math.random() * testPokemon.length)];
     const predictionObj = predictType(p);
     
-    const breakdown = rulesTypes.map(type => {
+    const breakdown = rulesTypes
+      .map(type => {
         const score = calculateScore(p, zoneRules[type]);
-        const maxPossible = 8; 
         return {
-            name: type.toUpperCase(),
-            icon: RULE_ICONS.DEFAULT,
-            stat: `${score} pts`, 
-            pass: type === predictionObj.type 
+          name: type.toUpperCase(),
+          icon: RULE_ICONS.DEFAULT,
+          score,                 
+          stat: `${score} pts`,
+          pass: type === predictionObj.type
         };
-    }).sort((a,b) => b.pass ? -1 : 1);
+      })
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;   // higher score first
+        }
+        return Math.random() - 0.5;   // random order if same score
+      });
+
+
 
     setCurrentTestResult({
         ...p, // <--- CRITICAL FIX: Include full stats for card flip

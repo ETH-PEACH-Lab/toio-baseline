@@ -263,7 +263,8 @@ const Zone1 = ({ onNextZone }) => {
               <p className="mb-0">Please complete the Validation Step to unlock this challenge!</p>
             </div>
           ) : (
-            <TestWidget 
+            <TestWidget
+              mode="zone1" 
               progress={`${testStep}/3`}
               pokemon={currentTestResult ? currentTestResult : null} // Pass full object
               rules={currentTestResult ? currentTestResult.rules : []}

@@ -155,7 +155,8 @@ const TestWidget = ({
     prediction = "",
     result = { isMatch: false, actualType: "" },
     onNext,
-    botName = "RuleBot"
+    botName = "RuleBot",
+    mode = "default"
 }) => {
     const isStart = progress.startsWith('0');
     const [currentStep, totalSteps] = progress.split('/').map(Number);
@@ -220,17 +221,28 @@ const TestWidget = ({
                     {/* Right Column: Rules & Results */}
                     <Col md={8} className="ps-md-5 mt-4 mt-md-0 d-flex flex-column justify-content-center">
                         <Row className="mb-3 text-muted fw-bold border-bottom pb-2 small text-uppercase spacing-1">
-                            <Col xs={4}>Your Rule</Col>
-                            <Col xs={5}>Pokémon Stat</Col>
-                            <Col xs={3} className="text-end">Result</Col>
+                            {mode === "zone1" ? (
+                                <>
+                                    <Col xs={4}>Your Rule</Col>
+                                    <Col xs={5}>Pokémon Stat</Col>
+                                    <Col xs={3} className="text-end">Result</Col>
+                                </>
+                            ) : (
+                                <>
+                                    <Col xs={4}>Type</Col>
+                                    <Col xs={5}>Score</Col>
+                                    <Col xs={3} className="text-end">Result</Col>
+                                </>
+                            )}
                         </Row>
+
 
                         <div className="mb-4">
                             {rules.map((rule, idx) => (
                                 <Row key={idx} className="py-3 border-bottom align-items-center">
                                     <Col xs={4} className="fw-bold d-flex align-items-center">
                                         {rule.name.length > 2 ? 
-                                            <>Rule {idx + 1}: {rule.icon && <img src={rule.icon} alt="" width="20" height="20" className="me-2" style={{ objectFit: 'contain' }} />}{rule.name}</>
+                                            <>{rule.icon && <img src={rule.icon} alt="" width="20" height="20" className="me-2" style={{ objectFit: 'contain' }} />}{rule.name}</>
                                             : rule.name
                                         }
                                     </Col>
