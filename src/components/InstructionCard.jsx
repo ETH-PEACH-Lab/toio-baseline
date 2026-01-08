@@ -4,8 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChalkboardTeacher, faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import GuideOverlay from './GuideOverlay';
 
-const InstructionCard = ({ title, subtitle, instruction }) => {
+// Added onGuidebookOpen prop
+const InstructionCard = ({ title, subtitle, instruction, onGuidebookOpen }) => {
   const [showGuide, setShowGuide] = useState(false);
+
+  const handleOpenGuide = () => {
+      setShowGuide(true);
+      if (onGuidebookOpen) {
+          onGuidebookOpen(); // Notify parent (Zone1) that guide was opened
+      }
+  };
 
   return (
     <div className="mb-5">
@@ -34,7 +42,7 @@ const InstructionCard = ({ title, subtitle, instruction }) => {
             }}
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            onClick={() => setShowGuide(true)}
+            onClick={handleOpenGuide} // Use local handler
           >
             <FontAwesomeIcon icon={faBookOpen} className="me-2" /> Open Guide
           </Button>

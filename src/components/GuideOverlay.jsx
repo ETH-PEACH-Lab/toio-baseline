@@ -3,9 +3,23 @@ import { Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
+// Import Guidebook Images
+import G1 from '../assets/G1.png';
+import G2 from '../assets/G2.png';
+import G3 from '../assets/G3.png';
+import G4 from '../assets/G4.png';
+
+const PAGES = [
+  { id: 1, title: "🔥 Fire Type Page", img: G1 },
+  { id: 2, title: "💧 Water Type Page", img: G2 },
+  { id: 3, title: "🍃 Grass Type Page", img: G3 },
+  { id: 4, title: "🐉 Dragon Type Page", img: G4 }
+];
+
 const GuideOverlay = ({ show, onHide }) => {
   const [page, setPage] = useState(1);
-  const totalPages = 4;
+  const totalPages = PAGES.length;
+  const currentPageData = PAGES[page - 1];
 
   const handlePrev = () => setPage(p => Math.max(1, p - 1));
   const handleNext = () => setPage(p => Math.min(totalPages, p + 1));
@@ -14,13 +28,14 @@ const GuideOverlay = ({ show, onHide }) => {
   const modalContentStyle = {
     backgroundColor: '#fffef2', // Cream/Beige background
     borderRadius: '15px',
-    border: '4px solid #e0c090' // Light brown border
+    border: '4px solid #e0c090', // Light brown border
+    overflow: 'hidden'
   };
 
   const navButtonStyle = {
     width: '40px',
     height: '40px',
-    minWidth: '40px', // Prevent squishing
+    minWidth: '40px',
     borderRadius: '50%',
     padding: 0,
     display: 'flex',
@@ -32,21 +47,21 @@ const GuideOverlay = ({ show, onHide }) => {
     borderColor: '#e67700',
     color: 'white',
     zIndex: 10,
-    flexShrink: 0 // Prevent flexbox resizing
+    flexShrink: 0
   };
 
-  const imagePlaceholderStyle = {
+  const imageContainerStyle = {
     width: '100%',
-    height: '350px',
-    backgroundColor: '#dcdde1',
-    border: '2px dashed #bdc3c7',
+    height: '400px', // Increased slightly to fit content
+    backgroundColor: '#fff',
+    border: '2px solid #bdc3c7',
     borderRadius: '8px',
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 20px',
-    position: 'relative' // For adding image later
+    overflow: 'hidden',
+    padding: '5px'
   };
 
   return (
@@ -54,10 +69,10 @@ const GuideOverlay = ({ show, onHide }) => {
         <div className="modal-content" style={modalContentStyle}>
             <Modal.Header closeButton className="border-0 pb-0">
                 <Modal.Title className="w-100 text-center fw-bold" style={{ color: '#5d4037' }}>
-                    🔥 Fire Type Analysis
+                    {currentPageData.title}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body className="position-relative px-5 py-4">
+            <Modal.Body className="position-relative px-4 py-4">
                 
                 <div className="d-flex align-items-center justify-content-between">
                     {/* Left Button */}
@@ -71,11 +86,16 @@ const GuideOverlay = ({ show, onHide }) => {
                     </Button>
 
                     {/* Content Area */}
-                    <div style={imagePlaceholderStyle}>
-                         <div className="text-muted text-center p-3">
-                            <h5>Illustration for Page {page}</h5>
-                            <p className="small">Placeholder for rule book content</p>
-                         </div>
+                    <div style={imageContainerStyle}>
+                         <img 
+                            src={currentPageData.img} 
+                            alt={`Guide Page ${page}`} 
+                            style={{ 
+                                maxWidth: '100%', 
+                                maxHeight: '100%', 
+                                objectFit: 'contain' 
+                            }} 
+                         />
                     </div>
 
                     {/* Right Button */}

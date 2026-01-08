@@ -3,24 +3,57 @@ import { ProgressBar, Row, Col, Card, Alert, Button, Container } from 'react-boo
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTree, faBox, faCheck, faTimes, faSearch, faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import InstructionCard from '../InstructionCard';
-import { PACKAGE_DATA } from '../../data/package';
 import { TYPE_ICONS } from '../../data/type';
 
+// Import Images directly
+import fireA from '../../assets/firea.png';
+import fireB from '../../assets/fireb.png';
+import waterA from '../../assets/watera.png';
+import waterB from '../../assets/waterb.png';
+import grassA from '../../assets/grassa.png';
+import grassB from '../../assets/grassb.png';
+import dragonA from '../../assets/dragona.png';
+import dragonB from '../../assets/dragonb.png';
+
+// Define Correct Answers: (B, A, B, B)
+// This means for Fire: B is pure. For Water: A is pure. etc.
+const PACKAGE_DATA = {
+    FIRE: [
+        { id: 'fire_a', label: 'Package A', image: fireA, isPure: false }, // Noisy
+        { id: 'fire_b', label: 'Package B', image: fireB, isPure: true }   // Pure (Correct)
+    ],
+    WATER: [
+        { id: 'water_a', label: 'Package A', image: waterA, isPure: true }, // Pure (Correct)
+        { id: 'water_b', label: 'Package B', image: waterB, isPure: false } // Noisy
+    ],
+    GRASS: [
+        { id: 'grass_a', label: 'Package A', image: grassA, isPure: false }, // Noisy
+        { id: 'grass_b', label: 'Package B', image: grassB, isPure: true }   // Pure (Correct)
+    ],
+    DRAGON: [
+        { id: 'dragon_a', label: 'Package A', image: dragonA, isPure: false }, // Noisy
+        { id: 'dragon_b', label: 'Package B', image: dragonB, isPure: true }   // Pure (Correct)
+    ]
+};
+
 const ReviewComparison = ({ type, userCorrect, icon }) => {
-    const isUserChoicePure = userCorrect; // In this mock logic, Correct = Pure Choice
+    const isUserChoicePure = userCorrect;
     const typeData = PACKAGE_DATA[type];
     const noisyPkg = typeData.find(p => !p.isPure);
     const purePkg = typeData.find(p => p.isPure);
 
+    // Determine which side the user picked for visual feedback
+    // If user was correct, they picked Pure. If incorrect, they picked Noisy.
+    
     return (
         <div className="mb-5 border rounded-3 p-3 shadow-sm bg-white">
             <div className="text-center mb-3">
                 <h4 className="fw-bold">
                     Review: <span className="text-uppercase">{type}</span>
-                    <img src={icon} alt={type} style={{ width: 30, marginLeft: 10 }} />
+                    <img src={icon} alt={type} style={{ width: 30, marginLeft: 10, objectFit: 'contain' }} />
                 </h4>
                 <div className={`fw-bold ${isUserChoicePure ? 'text-success' : 'text-danger'}`}>
-                    You chose: {isUserChoicePure ? 'Correct Package' : 'Incorrect Package'}
+                    You chose: {isUserChoicePure ? 'Correct Package (Pure)' : 'Incorrect Package (Noisy)'}
                 </div>
             </div>
 
@@ -92,7 +125,7 @@ const ResultCard = ({ title, icon, isPure }) => {
             }}
         >
             <Card.Body className="d-flex flex-column align-items-center justify-content-center py-4">
-                <img src={icon} alt={title} style={{ width: '40px', height: '40px', marginBottom: '15px' }} />
+                <img src={icon} alt={title} style={{ width: '40px', height: '40px', marginBottom: '15px', objectFit: 'contain' }} />
                 <h5 className="fw-bold mb-3" style={{ color: isPure ? '#155724' : '#721c24' }}>{title}</h5>
                 
                 {isPure ? (
@@ -115,26 +148,25 @@ const ResultCard = ({ title, icon, isPure }) => {
 const PackageCard = ({ footerLabel, imageSrc, onClick }) => {
   return (
     <Card 
-      className="h-100" 
+      className="h-100 shadow-sm border-0" 
       onClick={onClick}
-      style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+      style={{ cursor: 'pointer', transition: 'transform 0.2s', backgroundColor: '#f8f9fa' }}
       onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
       onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
     >
-      <Card.Body className="p-4 bg-white rounded-top" style={{ minHeight: '300px' }}>
-        {/* Package Image Content */}
-        <div className="text-center d-flex align-items-center justify-content-center h-100">
+      <Card.Body className="p-0 bg-white rounded overflow-hidden d-flex flex-column" style={{ minHeight: '320px' }}>
+        {/* Image Container */}
+        <div className="flex-grow-1 d-flex align-items-center justify-content-center p-3">
              <img 
                src={imageSrc} 
                alt="Package Data Content" 
-               className="img-fluid"
-               style={{ maxHeight: '250px', objectFit: 'contain' }}
+               className="img-fluid rounded"
+               style={{ maxHeight: '280px', width: 'auto', objectFit: 'contain' }}
              />
         </div>
-
       </Card.Body>
-      <Card.Footer className="text-center py-3 bg-light">
-          <h5 className="mb-0 text-muted fw-bold d-flex align-items-center justify-content-center">
+      <Card.Footer className="text-center py-3 bg-white border-top-0">
+          <h5 className="mb-0 text-dark fw-bold d-flex align-items-center justify-content-center">
             <FontAwesomeIcon icon={faBox} className="me-2 text-warning" />
             {footerLabel}
           </h5>
@@ -145,14 +177,31 @@ const PackageCard = ({ footerLabel, imageSrc, onClick }) => {
 
 const Zone3 = ({ onNextZone }) => {
   const [step, setStep] = useState(1);
+  const [userResults, setUserResults] = useState({}); // { FIRE: true, WATER: false ... }
   const [showReview, setShowReview] = useState(false);
-  const totalSteps = 4;
+  
+  const typesOrder = ["FIRE", "WATER", "GRASS", "DRAGON"];
+  const totalSteps = typesOrder.length;
 
-  const handleSelection = () => {
+  const currentTypeKey = typesOrder[step - 1];
+
+  const handleSelection = (selectedPkg) => {
+    // Determine correctness immediately
+    const isCorrect = selectedPkg.isPure;
+    
+    // Save Result
+    setUserResults(prev => ({
+        ...prev,
+        [currentTypeKey]: isCorrect
+    }));
+
+    // Move to next step
     setStep(prev => prev + 1);
   };
 
   if (step > totalSteps) {
+    const correctCount = Object.values(userResults).filter(v => v).length;
+
     return (
       <div className="py-4">
         <div className="text-center mb-5">
@@ -164,27 +213,29 @@ const Zone3 = ({ onNextZone }) => {
 
         <Row className="g-4 mb-4">
             <Col md={6}>
-                <ResultCard title="FIRE" icon={TYPE_ICONS.FIRE} isPure={true} />
+                <ResultCard title="FIRE" icon={TYPE_ICONS.FIRE} isPure={userResults.FIRE} />
             </Col>
             <Col md={6}>
-                <ResultCard title="WATER" icon={TYPE_ICONS.WATER} isPure={false} />
+                <ResultCard title="WATER" icon={TYPE_ICONS.WATER} isPure={userResults.WATER} />
             </Col>
             <Col md={6}>
-                <ResultCard title="GRASS" icon={TYPE_ICONS.GRASS} isPure={true} />
+                <ResultCard title="GRASS" icon={TYPE_ICONS.GRASS} isPure={userResults.GRASS} />
             </Col>
             <Col md={6}>
-                <ResultCard title="DRAGON" icon={TYPE_ICONS.DRAGON} isPure={true} />
+                <ResultCard title="DRAGON" icon={TYPE_ICONS.DRAGON} isPure={userResults.DRAGON} />
             </Col>
         </Row>
 
         <div className="text-center mt-5">
-            <h3 className="fw-bold mb-2">Score: 3 / 4</h3>
-            <p className="text-muted fs-5 mb-4">Some noisy data got in.</p>
+            <h3 className="fw-bold mb-2">Score: {correctCount} / 4</h3>
+            <p className="text-muted fs-5 mb-4">
+                {correctCount === 4 ? "Perfect! DataBot has pristine data." : "Some noisy data got in."}
+            </p>
             
             <div className="d-flex justify-content-center gap-3">
                 <Button 
                     variant="warning" 
-                    className="text-white fw-bold px-5 rounded-pill"
+                    className="text-white fw-bold px-5 rounded-pill shadow-sm"
                     onClick={() => setShowReview(!showReview)}
                 >
                     <FontAwesomeIcon icon={faSearch} className="me-2" />
@@ -193,7 +244,7 @@ const Zone3 = ({ onNextZone }) => {
                 <Button 
                     variant="success" 
                     size="lg" 
-                    className="fw-bold px-5 rounded-pill"
+                    className="fw-bold px-5 rounded-pill shadow-sm"
                     onClick={onNextZone}
                 >
                     <FontAwesomeIcon icon={faCheck} className="me-2" />
@@ -204,10 +255,10 @@ const Zone3 = ({ onNextZone }) => {
             {showReview && (
                 <Container className="mt-5 text-start">
                     <h4 className="text-center mb-4 fw-bold text-secondary">Detailed Analysis</h4>
-                    <ReviewComparison type="FIRE" userCorrect={true} icon={TYPE_ICONS.FIRE} />
-                    <ReviewComparison type="WATER" userCorrect={false} icon={TYPE_ICONS.WATER} />
-                    <ReviewComparison type="GRASS" userCorrect={true} icon={TYPE_ICONS.GRASS} />
-                    <ReviewComparison type="DRAGON" userCorrect={true} icon={TYPE_ICONS.DRAGON} />
+                    <ReviewComparison type="FIRE" userCorrect={userResults.FIRE} icon={TYPE_ICONS.FIRE} />
+                    <ReviewComparison type="WATER" userCorrect={userResults.WATER} icon={TYPE_ICONS.WATER} />
+                    <ReviewComparison type="GRASS" userCorrect={userResults.GRASS} icon={TYPE_ICONS.GRASS} />
+                    <ReviewComparison type="DRAGON" userCorrect={userResults.DRAGON} icon={TYPE_ICONS.DRAGON} />
                 </Container>
             )}
         </div>
@@ -215,16 +266,8 @@ const Zone3 = ({ onNextZone }) => {
     );
   }
 
-  // Determine current type label based on step
-  const getCurrentType = () => {
-      switch(step) {
-          case 1: return "Fire";
-          case 2: return "Water";
-          case 3: return "Grass";
-          case 4: return "Dragon";
-          default: return "Unknown";
-      }
-  };
+  // Helper for title casing
+  const formatTitle = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   return (
     <>
@@ -240,26 +283,25 @@ const Zone3 = ({ onNextZone }) => {
       />
       
       <div className="mb-5">
-        <label className="fw-bold mb-2">Progress: {getCurrentType()} Type ({step}/{totalSteps})</label>
+        <label className="fw-bold mb-2">Progress: {formatTitle(currentTypeKey)} Type ({step}/{totalSteps})</label>
         <ProgressBar 
-            now={(step / totalSteps) * 100} 
+            now={((step - 1) / totalSteps) * 100} 
             variant="success" 
             style={{ height: '25px', borderRadius: '15px' }}
         />
       </div>
 
       <div className="text-center mb-4">
-          <h3 className="fw-bold text-secondary">Step {step}: Which package is the Clean (Pure) {getCurrentType().toLowerCase()} data?</h3>
+          <h3 className="fw-bold text-secondary">Step {step}: Which package is the Clean (Pure) {formatTitle(currentTypeKey)} data?</h3>
       </div>
 
       <Row className="g-4 mb-5 pb-5">
-        {PACKAGE_DATA[getCurrentType().toUpperCase()]?.map((pkg) => (
+        {PACKAGE_DATA[currentTypeKey]?.map((pkg) => (
             <Col md={6} key={pkg.id}>
                 <PackageCard 
-                    title={pkg.label} 
                     footerLabel={pkg.label} 
                     imageSrc={pkg.image}
-                    onClick={handleSelection}
+                    onClick={() => handleSelection(pkg)}
                 />
             </Col>
         ))}

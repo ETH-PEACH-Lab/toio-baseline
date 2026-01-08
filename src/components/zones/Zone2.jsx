@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Row, Col, Pagination, Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWater, faChevronLeft, faChevronRight, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faWater, faChevronLeft, faChevronRight, faLock, faArrowRight, faEye, faList } from '@fortawesome/free-solid-svg-icons';
 import RuleWidget from '../RuleWidget';
 import InstructionCard from '../InstructionCard';
 import RulePlate from '../RulePlate';
@@ -11,28 +11,29 @@ import ValidationWidget from '../ValidationWidget';
 import TestWidget from '../TestWidget';
 
 import { RULE_ICONS } from '../../data/rules';
+import pokemondata from '../../data/pokemondata.json'; 
+import testPokemon from '../../data/testPokemon'; 
 
 const Zone2 = ({ onNextZone }) => {
   const [activePage, setActivePage] = useState(1);
   const [showResults, setShowResults] = useState(false);
   const [testStep, setTestStep] = useState(0);
+  const [currentTestResult, setCurrentTestResult] = useState(null);
+  
+  // Show All switch state
+  const [showAllBoard, setShowAllBoard] = useState(false);
+
   const [results, setResults] = useState({
-    fire: { count: 0, total: 20 },
-    water: { count: 0, total: 15 },
-    grass: { count: 0, total: 10 },
-    dragon: { count: 0, total: 5 },
+    fire: { count: 0, total: 0 },
+    water: { count: 0, total: 0 },
+    grass: { count: 0, total: 0 },
+    dragon: { count: 0, total: 0 },
     accuracy: 0
   });
 
-  const rules = ['fire', 'water', 'grass', 'dragon'];
-  const currentType = rules[activePage - 1];
-  const totalPages = rules.length;
-
-  const zone2Hints = [
-    "Different elements have distinct strengths. Water is fluid and defensive.",
-    "Grass types are rooted in nature. Think about their habitat.",
-    "Dragons are legendary creatures. They usually soar high and strike hard."
-  ];
+  const rulesTypes = ['fire', 'water', 'grass', 'dragon'];
+  const currentType = rulesTypes[activePage - 1];
+  const totalPages = rulesTypes.length;
 
   const [zoneRules, setZoneRules] = useState({
     fire: [null, null, null, null],
@@ -41,14 +42,83 @@ const Zone2 = ({ onNextZone }) => {
     dragon: [null, null, null, null],
   });
 
+  const zone2Hints = [
+    "Different elements have distinct strengths. Water is fluid and defensive.",
+    "Grass types are rooted in nature. Think about their habitat.",
+    "Dragons are legendary creatures. They usually soar high and strike hard."
+  ];
+
   const isStep2Unlocked = Object.values(zoneRules).some(rules => rules.some(r => r !== null));
   const isStep3Unlocked = showResults;
 
+  // --- LOGIC HELPERS ---
+
+  const normalizeRule = (rule) => {
+    if (!rule) return null;
+    const rawId = rule.id.toLowerCase();
+    let key = '';
+    let name = '';
+    let requiredState = 'high';
+
+    if (rawId.includes('attack')) { key = 'Attack'; name = 'Attack'; }
+    else if (rawId.includes('defense')) { key = 'Defense'; name = 'Defense'; }
+    else if (rawId.includes('speed')) { key = 'Speed'; name = 'Speed'; }
+    else if (rawId.includes('wings')) { key = 'HasWings'; name = 'Wings'; }
+    else if (rawId.includes('temp')) { key = 'HabitatTemperature'; name = 'Temp'; }
+    else if (rawId.includes('altitude')) { key = 'HabitatAltitude'; name = 'Altitude'; }
+
+    if (rawId.startsWith('low') || rawId.startsWith('no')) requiredState = 'low';
+
+    return { ...rule, key, name, requiredState };
+  };
+
+  const calculateScore = (pokemon, rules) => {
+    let score = 0;
+    rules.forEach((rule, index) => {
+        if (!rule) return;
+        const normalized = normalizeRule(rule);
+        const val = pokemon[normalized.key];
+        const isHigh = normalized.key === 'HasWings' ? val === 1 : val > 5;
+        const matches = normalized.requiredState === 'high' ? isHigh : !isHigh;
+        
+        if (matches) {
+            // Weighted Scoring: 1st=3pts, 2nd=2pts, 3rd=2pts, 4th=1pt
+            const points = (index === 0) ? 3 : (index < 3 ? 2 : 1);
+            score += points;
+        }
+    });
+    return score;
+  };
+
+  const predictType = (pokemon) => {
+      let bestType = 'fire'; // Default fallback
+      let maxScore = -1;
+
+      rulesTypes.forEach(type => {
+          const score = calculateScore(pokemon, zoneRules[type]);
+          if (score > maxScore) {
+              maxScore = score;
+              bestType = type;
+          }
+      });
+      return { type: bestType, score: maxScore };
+  };
+
+  // --- HANDLERS ---
+
   const handleDropRule = (type, idx, rule) => {
+    if (zoneRules[type].some((r, i) => i !== idx && r && r.id === rule.id)) {
+        alert(`You already used this rule for ${type}!`);
+        return;
+    }
     setZoneRules(prev => ({
       ...prev,
       [type]: prev[type].map((r, i) => (i === idx ? rule : r))
     }));
+
+    setShowResults(false);
+    setTestStep(0);
+    setCurrentTestResult(null);
   };
 
   const handleReset = (type) => {
@@ -56,23 +126,65 @@ const Zone2 = ({ onNextZone }) => {
       ...prev,
       [type]: [null, null, null, null]
     }));
+    setShowResults(false);
+    setTestStep(0);
+    setCurrentTestResult(null);
   };
 
   const handleRunValidation = () => {
-    // TODO: Implement actual validation logic here
-    // For now, we are simulating a successful validation result
-    setShowResults(true);
-    setResults({
-      fire: { count: 18, total: 20 },
-      water: { count: 14, total: 15 },
-      grass: { count: 10, total: 10 },
-      dragon: { count: 5, total: 5 },
-      accuracy: 94
+    let correctCount = 0;
+    const typeStats = {
+        fire: { count: 0, total: 0 },
+        water: { count: 0, total: 0 },
+        grass: { count: 0, total: 0 },
+        dragon: { count: 0, total: 0 }
+    };
+
+    pokemondata.forEach(p => {
+        const actual = p.CorrectType;
+        if (typeStats[actual]) typeStats[actual].total++;
+        const prediction = predictType(p).type;
+        if (prediction === actual) {
+            correctCount++;
+            if (typeStats[actual]) typeStats[actual].count++;
+        }
     });
+
+    setResults({
+      fire: typeStats.fire,
+      water: typeStats.water,
+      grass: typeStats.grass,
+      dragon: typeStats.dragon,
+      accuracy: ((correctCount / pokemondata.length) * 100).toFixed(1)
+    });
+    setShowResults(true);
   };
 
   const handleTest = () => {
-    // TODO: Implement actual test logic here
+    const p = testPokemon[Math.floor(Math.random() * testPokemon.length)];
+    const predictionObj = predictType(p);
+    
+    const breakdown = rulesTypes.map(type => {
+        const score = calculateScore(p, zoneRules[type]);
+        const maxPossible = 8; 
+        return {
+            name: type.toUpperCase(),
+            icon: RULE_ICONS.DEFAULT,
+            stat: `${score} pts`, 
+            pass: type === predictionObj.type 
+        };
+    }).sort((a,b) => b.pass ? -1 : 1);
+
+    setCurrentTestResult({
+        ...p, // <--- CRITICAL FIX: Include full stats for card flip
+        name: p.name,
+        type: p.CorrectType.toUpperCase(),
+        image: p.img,
+        rules: breakdown,
+        prediction: predictionObj.type.toUpperCase(),
+        isMatch: predictionObj.type === p.CorrectType
+    });
+
     setTestStep(prev => Math.min(prev + 1, 3));
   };
 
@@ -101,11 +213,25 @@ const Zone2 = ({ onNextZone }) => {
                   />
                 </div>
               </Col>
-              <Col md={12} lg={7}>
+              
+              <Col md={12} lg={7} className="position-relative mt-4 mt-lg-0">
+                <div style={{ position: 'absolute', top: '-40px', right: '15px', zIndex: 10 }}>
+                  <Button
+                    variant={showAllBoard ? "primary" : "outline-primary"}
+                    size="sm"
+                    className="shadow-sm fw-bold"
+                    onClick={() => setShowAllBoard(prev => !prev)}
+                  >
+                    <FontAwesomeIcon icon={showAllBoard ? faList : faEye} className="me-2" />
+                    Show All
+                  </Button>
+                </div>
+
                 <BoardWidget 
-                  activeType={currentType} 
+                  activeType={currentType}
                   allRules={zoneRules}
                   usePoints={true}
+                  showAll={showAllBoard}
                   style={{ height: '100%' }}
                 />
               </Col>
@@ -119,7 +245,7 @@ const Zone2 = ({ onNextZone }) => {
                 >
                   <FontAwesomeIcon icon={faChevronLeft} />
                 </Pagination.Prev>
-                {rules.map((rule, idx) => (
+                {rulesTypes.map((rule, idx) => (
                   <Pagination.Item
                     key={idx + 1}
                     active={idx + 1 === activePage}
@@ -175,17 +301,15 @@ const Zone2 = ({ onNextZone }) => {
           ) : (
           <TestWidget 
               progress={`${testStep}/3`}
-              pokemon={{ 
-                name: "Palkia", 
-                type: "DRAGON", 
-                image: null 
-              }}
-              rules={[
-                { name: "Special Attack", icon: RULE_ICONS.ATTACK, stat: "Sp. Atk: 9 (High)", pass: true },
-                { name: "Speed", icon: RULE_ICONS.SPEED, stat: "Speed: 8 (High)", pass: true }
-              ]}
-              prediction="WATER"
-              result={{ isMatch: false, actualType: "DRAGON" }}
+              // CRITICAL FIX: Pass the full currentTestResult object
+              pokemon={currentTestResult} 
+              
+              rules={currentTestResult ? currentTestResult.rules : []}
+              prediction={currentTestResult ? currentTestResult.prediction : ""}
+              result={currentTestResult ? { 
+                isMatch: currentTestResult.isMatch, 
+                actualType: currentTestResult.type 
+              } : { isMatch: false, actualType: "" }}
               onNext={handleTest}
             />
           )}

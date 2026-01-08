@@ -1,9 +1,7 @@
-import React from 'react';
-import { Card } from 'react-bootstrap';
-
 import { FEATURES, TYPES } from '../data/board';
 
-const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints = false, style = {} }) => {
+// 2️⃣ Minimal change inside BoardWidget (Added showAll prop)
+const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints = false, showAll = false, style = {} }) => {
   
   const getFeatureState = (typeId, featureId) => {
     let rulesForType = [];
@@ -16,15 +14,17 @@ const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints =
       return null;
     }
 
-    // Check if any current rule maps to this feature
     const ruleIndex = rulesForType.findIndex(r => r && r.id.includes(featureId));
     const rule = rulesForType[ruleIndex];
     
     if (!rule) return null;
 
+    if (rule.weight !== undefined) {
+        return { type: rule.weight > 0 ? 'high' : 'low', points: Math.abs(rule.weight) };
+    }
+
     let points = 3;
     if (usePoints) {
-      // Map index to points: 0->3, 1->2, 2->2, 3->1
       const pointsMap = [3, 2, 2, 1];
       points = pointsMap[ruleIndex] || 1;
     }
@@ -47,8 +47,8 @@ const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints =
     const { type, points } = state;
     
     const dots = [1, 2, 3];
-    const highColor = '#2ecc71'; // Green
-    const lowColor = '#e74c3c'; // Red
+    const highColor = '#2ecc71'; 
+    const lowColor = '#e74c3c'; 
     const inactiveColor = '#e0e0e0';
 
     let filledCount = points;
@@ -88,7 +88,7 @@ const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints =
         className="bg-white overflow-hidden h-100 w-100 d-flex flex-column" 
         style={{ 
           borderRadius: '20px',
-          border: '4px solid #000' // Inner black bezel line
+          border: '4px solid #000' 
         }}
       >
         <div className="table-responsive h-100">
@@ -105,7 +105,19 @@ const BoardWidget = ({ activeType, currentRules = [], allRules = {}, usePoints =
             </thead>
             <tbody>
               {TYPES.map(type => (
-                <tr key={type.id} className={type.id === activeType ? 'bg-white' : 'bg-light'} style={{ opacity: type.id === activeType ? 1 : 0.4 }}>
+                // 3️⃣ Change ONLY row brightness (LED effect) logic
+                <tr 
+                  key={type.id} 
+                  className={type.id === activeType || showAll ? 'bg-white' : 'bg-light'} 
+                  style={{ 
+                    opacity: showAll 
+                        ? 1 
+                        : type.id === activeType 
+                            ? 1 
+                            : 0.4,
+                    transition: 'opacity 0.3s ease'
+                  }}
+                >
                   <td className="border-end py-1 px-1" style={{ backgroundColor: type.id === activeType ? '#fff' : '#f8f9fa' }}>
                     <img src={type.icon} alt={type.id} width="24" height="24" style={{ objectFit: 'contain' }} />
                   </td>
