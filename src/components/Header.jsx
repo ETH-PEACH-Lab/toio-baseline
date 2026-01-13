@@ -8,7 +8,7 @@ const Header = ({ activeZone, onZoneChange }) => {
       <Container className="py-4">
         <Row>
           <Col className="text-center">
-            <h1 className="mb-3">Pokemon AI Quest</h1>
+            <h1 className="mb-3">Pokémon AI Quest</h1>
             <ButtonGroup aria-label="Zone selection">
               {zones.map((zone) => (
                 <Button
