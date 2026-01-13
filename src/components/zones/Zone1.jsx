@@ -38,9 +38,9 @@ const Zone1 = ({ onNextZone }) => {
   });
 
   const zone1Hints = [
-    "Fire types are known for their scorching heat. Try looking for rules related to temperature!",
-    "Some Pokemon are known for their offensive power. Does 'High Attack' fit Fire types?",
-    "Look at which Pokémon are not Fire types — if your plan catches them too, there might be a conflict! Try removing or changing one clue to fix it."
+    "Hint 1: Not sure where to start? Look at page 2 — it shows what makes a Pokémon a Fire type. You can test your plan and try again if it doesn’t work!",
+    "Hint 2: Look at which Pokémon are not Fire types — if your plan catches them too, there might be a conflict! Try removing or changing one clue to fix it.",
+    "Hint 3: You can pick 1 to 4 Clue Cards for your plan. Do you think using more cards always makes it better? Try and see!"
   ];
 
   // --- LOGIC HELPERS ---

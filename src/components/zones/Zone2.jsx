@@ -43,9 +43,9 @@ const Zone2 = ({ onNextZone }) => {
   });
 
   const zone2Hints = [
-    "Different elements have distinct strengths. Water is fluid and defensive.",
-    "Grass types are rooted in nature. Think about their habitat.",
-    "Dragons are legendary creatures. They usually soar high and strike hard."
+   "Hint 1: Look at all 4 pages! Since the Dragon page is broken, use your imagination for dragons. If a clue isn’t clearly high or low for that type, it might not be needed in that plan.",
+   "Hint 2: Because order matters now, put the most important clue first — it’s usually the one that makes this Pokémon type special!",
+   "Hint 3: If two types share the same clue, make a trade-off. You can put that clue last in both plans, or keep it in one and remove it from the other. Try both ways and see what works best!"
   ];
 
   const isStep2Unlocked = Object.values(zoneRules).some(rules => rules.some(r => r !== null));
