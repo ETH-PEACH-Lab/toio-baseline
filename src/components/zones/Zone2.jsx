@@ -115,7 +115,7 @@ const Zone2 = ({ onNextZone }) => {
   // --- HANDLERS ---
 
   const handleDropRule = (type, idx, rule) => {
-    if (zoneRules[type].some((r, i) => i !== idx && r && r.id === rule.id)) {
+    if (rule && zoneRules[type].some((r, i) => i !== idx && r && r.id === rule.id)) {
         alert(`You already used this rule for ${type}!`);
         return;
     }
@@ -127,6 +127,13 @@ const Zone2 = ({ onNextZone }) => {
     setShowResults(false);
     setTestStep(0);
     setCurrentTestResult(null);
+  };
+
+  const handleRuleClick = (rule) => {
+    const idx = zoneRules[currentType].findIndex(r => r === null);
+    if (idx !== -1) {
+        handleDropRule(currentType, idx, rule);
+    } 
   };
 
   const handleReset = (type) => {
@@ -214,7 +221,7 @@ const Zone2 = ({ onNextZone }) => {
       />
       <div className="mb-4 border rounded" style={{ backgroundColor: '#fff' }}>
         <div className="p-3 border-bottom bg-light rounded-top">
-          <h5 className="m-0">Step 1: Designing the Rule</h5>
+          <h5 className="m-0">Step 1: Designing the RuleBot</h5>
         </div>
         <div className="p-3">
             <HintCard hints={zone2Hints} />
@@ -282,13 +289,13 @@ const Zone2 = ({ onNextZone }) => {
             </div>
             
             <div className="d-flex justify-content-center">
-              <RulePlate activeRules={zoneRules[currentType]} />
+              <RulePlate activeRules={zoneRules[currentType]} onRuleClick={handleRuleClick} />
             </div>
         </div>
       </div>
 
       <Card className={`mb-4 ${!isStep2Unlocked ? 'opacity-50' : ''}`}>
-         <Card.Header as="h5">Step 2: Validating the Rule</Card.Header>
+         <Card.Header as="h5">Step 2: Validating the RuleBot</Card.Header>
          <Card.Body>
             {!isStep2Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
@@ -308,7 +315,7 @@ const Zone2 = ({ onNextZone }) => {
       </Card>
 
       <Card className={`mb-4 ${!isStep3Unlocked ? 'opacity-50' : ''}`}>
-         <Card.Header as="h5">Step 3: Testing the Rule</Card.Header>
+        <Card.Header as="h5">Step 3: The Mystery Pokemon Challenge</Card.Header>
          <Card.Body>
           {!isStep3Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">

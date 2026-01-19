@@ -2,7 +2,7 @@ import React from 'react';
 import { RULES } from '../data/rules';
 import { setDraggedItem } from '../utils/dragState';
 
-const RulePlate = ({ activeRules = [] }) => {
+const RulePlate = ({ activeRules = [], onRuleClick }) => {
   const handleDragStart = (e, rule) => {
     setDraggedItem(rule);
     e.dataTransfer.setData('text/plain', JSON.stringify(rule));
@@ -34,9 +34,10 @@ const RulePlate = ({ activeRules = [] }) => {
         key={rule.id}
         draggable={!disabled}
         onDragStart={(e) => !disabled && handleDragStart(e, rule)}
+        onClick={() => !disabled && onRuleClick && onRuleClick(rule)}
         className={`bg-white shadow-sm border p-2 rounded ${disabled ? 'opacity-50' : ''}`}
         style={{ 
-          cursor: disabled ? 'default' : 'grab', 
+          cursor: disabled ? 'default' : 'pointer', 
           minWidth: '120px',
           display: 'flex',
           alignItems: 'center',

@@ -102,7 +102,14 @@ const RuleWidget = ({ type = 'fire', slots = [null, null, null, null], onDropRul
     border: `3px solid #d1d5db`,
     backgroundColor: '#fff',
     color: '#212529',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    cursor: 'pointer'
+  };
+
+  const handleSlotClick = (idx) => {
+    if (slots[idx]) {
+      onDropRule(idx, null);
+    }
   };
 
   const refreshButtonStyle = {
@@ -146,6 +153,7 @@ const RuleWidget = ({ type = 'fire', slots = [null, null, null, null], onDropRul
                 onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
                 onDrop={(e) => handleDrop(e, idx)}
+                onClick={() => handleSlotClick(idx)}
               >
                 {slots[idx] ? (
                   <div className="text-center w-100 h-100 d-flex flex-column align-items-center justify-content-center">

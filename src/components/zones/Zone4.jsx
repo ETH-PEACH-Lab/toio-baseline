@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMountain, faCheck, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -86,7 +86,7 @@ const Zone4 = ({ onNextZone }) => {
     
     // Reset state on change
     setShowResults(false);
-    setTrainedWeights({});
+    // setTrainedWeights({}); // Removed - handled by useEffect
     setTestStep(0);
     setCurrentTestResult(null);
   };
@@ -101,7 +101,10 @@ const Zone4 = ({ onNextZone }) => {
         }
     });
 
-    if (trainingData.length === 0) return null;
+    if (trainingData.length === 0) {
+        setTrainedWeights({});
+        return null;
+    }
 
     const weights = {};
     const types = ['fire', 'water', 'grass', 'dragon'];
@@ -147,6 +150,10 @@ const Zone4 = ({ onNextZone }) => {
     setTrainedWeights(weights);
     return weights;
   };
+
+  useEffect(() => {
+    trainModel();
+  }, [selectedDatasets]);
 
   const handleRunValidation = () => {
       const weights = trainModel();
@@ -279,8 +286,8 @@ const Zone4 = ({ onNextZone }) => {
     <>
       <InstructionCard 
         title={<span><FontAwesomeIcon icon={faMountain} className="me-2" />Zone 4: Sunrise Desert</span>}
-        subtitle="Training the AI Model"
-        instruction="You've gathered the data packages—now feed them to DataBot! You can only choose up to 4 packages to train. Choose carefully, as some data can confuse the AI."
+        subtitle="Training the DataBot"
+        instruction="You've gathered the data packages—now feed them to DataBot! You can only choose up to 4 packages to train. Choose carefully, as some data can confuse the DataBot."
       />
       
       <div className="mb-4 border rounded" style={{ backgroundColor: '#fff' }}>
@@ -333,7 +340,7 @@ const Zone4 = ({ onNextZone }) => {
       </div>
 
       <Card className={`mb-4 ${!isStep2Unlocked ? 'opacity-50' : ''}`}>
-         <Card.Header as="h5">Step 2: Train & Validate</Card.Header>
+         <Card.Header as="h5">Step 2: Validating the DataBot</Card.Header>
          <Card.Body>
             {!isStep2Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
@@ -354,7 +361,7 @@ const Zone4 = ({ onNextZone }) => {
       </Card>
 
       <Card className={`mb-4 ${!isStep3Unlocked ? 'opacity-50' : ''}`}>
-         <Card.Header as="h5">Step 3: Field Test</Card.Header>
+        <Card.Header as="h5">Step 3: The Mystery Pokemon Challenge</Card.Header>
          <Card.Body>
           {!isStep3Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">

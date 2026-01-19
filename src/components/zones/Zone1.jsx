@@ -83,7 +83,7 @@ const Zone1 = ({ onNextZone }) => {
 
   const handleDropRule = (idx, rule) => {
     // Basic duplication check
-    if (droppedRules.some((r, i) => i !== idx && r && r.id === rule.id)) {
+    if (rule && droppedRules.some((r, i) => i !== idx && r && r.id === rule.id)) {
         alert("You already used this rule!");
         return;
     }
@@ -95,6 +95,13 @@ const Zone1 = ({ onNextZone }) => {
     setShowResults(false);
     setTestStep(0);
     setCurrentTestResult(null);
+  };
+
+  const handleRuleClick = (rule) => {
+    const idx = droppedRules.findIndex(r => r === null);
+    if (idx !== -1) {
+        handleDropRule(idx, rule);
+    } 
   };
 
   const handleReset = () => {
@@ -195,7 +202,7 @@ const Zone1 = ({ onNextZone }) => {
       
       <div className="mb-4 border rounded" style={{ backgroundColor: '#fff' }}>
         <div className="p-3 border-bottom bg-light rounded-top">
-          <h5 className="m-0">Step 1: Designing the Rule</h5>
+          <h5 className="m-0">Step 1: Designing the RuleBot</h5>
         </div>
         <div className="p-3">
             {/* --- LOCK UI FOR STEP 1 --- */}
@@ -227,7 +234,7 @@ const Zone1 = ({ onNextZone }) => {
                     </Col>
                     </Row>
                     <div className="d-flex justify-content-center">
-                        <RulePlate activeRules={droppedRules} />
+                        <RulePlate activeRules={droppedRules} onRuleClick={handleRuleClick} />
                     </div>
                 </>
             )}
@@ -235,7 +242,7 @@ const Zone1 = ({ onNextZone }) => {
       </div>
 
       <Card className={`mb-4 ${!isStep2Unlocked ? 'opacity-50' : ''}`}>
-        <Card.Header as="h5">Step 2: Validating the Rule</Card.Header>
+        <Card.Header as="h5">Step 2: Validating the RuleBot</Card.Header>
         <Card.Body>
            {!isStep2Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
@@ -255,7 +262,7 @@ const Zone1 = ({ onNextZone }) => {
       </Card>
 
       <Card className={`mb-4 ${!isStep3Unlocked ? 'opacity-50' : ''}`}>
-        <Card.Header as="h5">Step 3: The Mystery Gift Challenge</Card.Header>
+        <Card.Header as="h5">Step 3: The Mystery Pokemon Challenge</Card.Header>
         <Card.Body>
           {!isStep3Unlocked ? (
             <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
