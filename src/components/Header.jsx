@@ -1,10 +1,14 @@
 import { Container, Row, Col, Button, ButtonGroup, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faStar, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const Header = ({ activeZone, onZoneChange, zones = [], unlockedIndex = 0, score = 0 }) => {
   // If zones prop is not provided, fallback (though App.jsx should provide it)
   const zoneList = zones.length > 0 ? zones : ['Zone 1: Clearview Meadow', 'Zone 2: Azure Coast', 'Zone 3: Whispering Woods', 'Zone 4: Sunrise Desert'];
+
+  // Current active index to determine past/future
+  const activeIndex = zoneList.indexOf(activeZone);
+  const isEnding = activeZone === 'Ending';
 
   return (
     <div className="bg-light border-bottom mb-3 shadow-sm">
@@ -22,19 +26,23 @@ const Header = ({ activeZone, onZoneChange, zones = [], unlockedIndex = 0, score
 
             <ButtonGroup aria-label="Zone selection">
               {zoneList.map((zone, idx) => {
-                const isLocked = idx > unlockedIndex;
+                const isFutureLocked = idx > unlockedIndex;
+                const isPast = idx < activeIndex || isEnding; // If ending, all zones are past/done
+                const isLocked = isFutureLocked || isPast;
+
                 return (
                   <Button
                     key={zone}
-                    variant={activeZone === zone ? "primary" : "outline-primary"}
+                    variant={activeZone === zone ? "primary" : (isPast ? "outline-success" : "outline-primary")}
                     onClick={() => !isLocked && onZoneChange(zone)}
                     disabled={isLocked}
                     style={{ 
-                      opacity: isLocked ? 0.6 : 1,
+                      opacity: isLocked ? (isPast ? 0.8 : 0.6) : 1,
                       cursor: isLocked ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    {isLocked && <FontAwesomeIcon icon={faLock} className="me-2" size="sm" />}
+                    {isFutureLocked && <FontAwesomeIcon icon={faLock} className="me-2" size="sm" />}
+                    {isPast && <FontAwesomeIcon icon={faCheck} className="me-2" size="sm" />}
                     {zone.split(':')[0]} 
                   </Button>
                 );

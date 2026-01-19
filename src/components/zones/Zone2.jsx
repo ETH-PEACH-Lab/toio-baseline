@@ -19,6 +19,10 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
   const [showResults, setShowResults] = useState(false);
   const [testStep, setTestStep] = useState(0);
   const [currentTestResult, setCurrentTestResult] = useState(null);
+
+  // --- NEW: Passcode Lock State ---
+  const [passcode, setPasscode] = useState("");
+  const [isPasscodeUnlocked, setIsPasscodeUnlocked] = useState(false);
   
   // Show All switch state
   const [showAllBoard, setShowAllBoard] = useState(false);
@@ -48,6 +52,7 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
    "Hint 3: If two types share the same clue, make a trade-off. You can put that clue last in both plans, or keep it in one and remove it from the other. Try both ways and see what works best!"
   ];
 
+  const isStep1Unlocked = isPasscodeUnlocked;
   const isStep2Unlocked = Object.values(zoneRules).some(rules => rules.some(r => r !== null));
   const isStep3Unlocked = showResults;
 
@@ -112,7 +117,13 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
     return { type: chosenType, score: maxScore };
   };
 
-  // --- HANDLERS ---
+  const handleUnlock = () => {
+    if (passcode.trim() === "PinkUnicorn") {
+        setIsPasscodeUnlocked(true);
+    } else {
+        alert("Incorrect Passcode. Hint: It's a magical animal!");
+    }
+  };
 
   const handleDropRule = (type, idx, rule) => {
     if (rule && zoneRules[type].some((r, i) => i !== idx && r && r.id === rule.id)) {
@@ -227,6 +238,26 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
           <h5 className="m-0">Step 1: Designing the RuleBot</h5>
         </div>
         <div className="p-3">
+             {/* --- LOCK UI FOR STEP 1 --- */}
+            {!isStep1Unlocked ? (
+                <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
+                    <h4 className="mb-3"><FontAwesomeIcon icon={faLock} className="me-2" /> Training Locked</h4>
+                    <p className="mb-3">Please enter the facilitator passcode to begin training.</p>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            style={{ maxWidth: '200px' }}
+                            placeholder="Enter Passcode"
+                            value={passcode}
+                            onChange={(e) => setPasscode(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                        />
+                        <Button variant="primary" onClick={handleUnlock}>Unlock</Button>
+                    </div>
+                </div>
+            ) : (
+                <>
             <HintCard hints={zone2Hints} />
             <Row className="mb-3 align-items-stretch">
               <Col md={12} lg={5} className="mb-4 mb-lg-0 d-flex justify-content-center">
@@ -305,6 +336,8 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
             <div className="d-flex justify-content-center">
               <RulePlate activeRules={zoneRules[currentType]} onRuleClick={handleRuleClick} />
             </div>
+            </>
+            )}
         </div>
       </div>
 

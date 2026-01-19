@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ProgressBar, Row, Col, Card, Alert, Button, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTree, faBox, faCheck, faTimes, faSearch, faUserSecret } from '@fortawesome/free-solid-svg-icons';
+import { faTree, faBox, faCheck, faTimes, faSearch, faUserSecret, faLock } from '@fortawesome/free-solid-svg-icons';
 import InstructionCard from '../InstructionCard';
 import { TYPE_ICONS } from '../../data/type';
 
@@ -179,11 +179,24 @@ const Zone3 = ({ onNextZone }) => {
   const [step, setStep] = useState(1);
   const [userResults, setUserResults] = useState({}); // { FIRE: true, WATER: false ... }
   const [showReview, setShowReview] = useState(false);
+
+  // --- NEW: Passcode Lock State ---
+  const [passcode, setPasscode] = useState("");
+  const [isPasscodeUnlocked, setIsPasscodeUnlocked] = useState(false);
   
   const typesOrder = ["FIRE", "WATER", "GRASS", "DRAGON"];
   const totalSteps = typesOrder.length;
 
   const currentTypeKey = typesOrder[step - 1];
+
+  // --- HANDLERS ---
+  const handleUnlock = () => {
+    if (passcode.trim() === "GreenAvocado") {
+        setIsPasscodeUnlocked(true);
+    } else {
+        alert("Incorrect Passcode. Hint: It's a fruit!");
+    }
+  };
 
   const handleSelection = (selectedPkg) => {
     // Determine correctness immediately
@@ -291,6 +304,26 @@ const Zone3 = ({ onNextZone }) => {
         />
       </div>
 
+     {/* --- LOCK UI FOR ZONE 3 --- */}
+      {!isPasscodeUnlocked ? (
+        <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed mb-5">
+            <h4 className="mb-3"><FontAwesomeIcon icon={faLock} className="me-2" /> Data Lab Locked</h4>
+            <p className="mb-3">Please enter the facilitator passcode to begin data sorting.</p>
+            <div className="d-flex justify-content-center gap-2">
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    style={{ maxWidth: '200px' }}
+                    placeholder="Enter Passcode"
+                    value={passcode}
+                    onChange={(e) => setPasscode(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                />
+                <Button variant="primary" onClick={handleUnlock}>Unlock</Button>
+            </div>
+        </div>
+      ) : (
+      <>
       <div className="text-center mb-4">
           <h3 className="fw-bold text-secondary">Step {step}: Which package is the Clean (Professor) {formatTitle(currentTypeKey)} data?</h3>
       </div>
@@ -306,6 +339,8 @@ const Zone3 = ({ onNextZone }) => {
             </Col>
         ))}
       </Row>
+      </>
+      )}
     </>
   );
 };

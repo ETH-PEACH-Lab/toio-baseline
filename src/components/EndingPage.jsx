@@ -44,15 +44,6 @@ const EndingPage = ({ score, onRestart, caughtPokemon = [] }) => {
                 <span className="text-muted fs-5 ms-2">Total Score</span>
             </div>
           </div>
-
-          <Button 
-            variant="primary" 
-            size="lg" 
-            className="px-5 py-3 rounded-pill fw-bold shadow hover-lift"
-            onClick={onRestart}
-          >
-            <FontAwesomeIcon icon={faRedo} className="me-2" /> Start New Journey
-          </Button>
         </Card.Body>
       </Card>
     </Container>

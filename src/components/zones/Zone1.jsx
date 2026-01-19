@@ -20,14 +20,15 @@ const Zone1 = ({ onNextZone, onScoreUpdate }) => {
   const [showResults, setShowResults] = useState(false);
   const [testStep, setTestStep] = useState(0);
   
-  // --- NEW: Step 1 Lock State ---
-  const [isGuidebookOpen, setIsGuidebookOpen] = useState(false);
+  // --- NEW: Passcode Lock State ---
+  const [passcode, setPasscode] = useState("");
+  const [isPasscodeUnlocked, setIsPasscodeUnlocked] = useState(false);
   
   // New State for the Single Test Display
   const [currentTestResult, setCurrentTestResult] = useState(null);
 
   // Unlock Conditions
-  const isStep1Unlocked = isGuidebookOpen;
+  const isStep1Unlocked = isPasscodeUnlocked;
   const isStep2Unlocked = droppedRules.some(r => r !== null);
   const isStep3Unlocked = showResults;
 
@@ -76,9 +77,12 @@ const Zone1 = ({ onNextZone, onScoreUpdate }) => {
 
   // --- HANDLERS ---
 
-  // Callback for InstructionCard
-  const handleGuidebookOpen = () => {
-    setIsGuidebookOpen(true);
+  const handleUnlock = () => {
+    if (passcode.trim() === "RedPanda") {
+        setIsPasscodeUnlocked(true);
+    } else {
+        alert("Incorrect Passcode. Hint: It's an animal!");
+    }
   };
 
   const handleDropRule = (idx, rule) => {
@@ -199,7 +203,6 @@ const Zone1 = ({ onNextZone, onScoreUpdate }) => {
         title={<span><FontAwesomeIcon icon={faCampground} className="me-2" />Zone 1: Clearview Meadow</span>}
         subtitle="Simple Rules"
         instruction="Welcome to the journey! To help RuleBot identify Fire-types, we must give it clear instructions. Drag your Clue Cards into the slots to build its brain!"
-        onGuidebookOpen={handleGuidebookOpen} // Pass handler
       />
       
       <div className="mb-4 border rounded" style={{ backgroundColor: '#fff' }}>
@@ -210,8 +213,20 @@ const Zone1 = ({ onNextZone, onScoreUpdate }) => {
             {/* --- LOCK UI FOR STEP 1 --- */}
             {!isStep1Unlocked ? (
                 <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
-                    <h4 className="mb-3"><FontAwesomeIcon icon={faLock} className="me-2" /> Locked</h4>
-                    <p className="mb-0">Please open guidebook to unlock...</p>
+                    <h4 className="mb-3"><FontAwesomeIcon icon={faLock} className="me-2" /> Training Locked</h4>
+                    <p className="mb-3">Please enter the facilitator passcode to begin training.</p>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            style={{ maxWidth: '200px' }}
+                            placeholder="Enter Passcode"
+                            value={passcode}
+                            onChange={(e) => setPasscode(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                        />
+                        <Button variant="primary" onClick={handleUnlock}>Unlock</Button>
+                    </div>
                 </div>
             ) : (
                 <>

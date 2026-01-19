@@ -82,7 +82,12 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
   const [testStep, setTestStep] = useState(0);
   const [currentTestResult, setCurrentTestResult] = useState(null);
   const [usedPokemonNames, setUsedPokemonNames] = useState([]);
+  
+  // --- NEW: Passcode Lock State ---
+  const [passcode, setPasscode] = useState("");
+  const [isPasscodeUnlocked, setIsPasscodeUnlocked] = useState(false);
 
+  const isStep1Unlocked = isPasscodeUnlocked;
   const isStep2Unlocked = selectedDatasets.length > 0;
   const isStep3Unlocked = showResults;
 
@@ -103,6 +108,14 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
     setTestStep(0);
     setCurrentTestResult(null);
     setUsedPokemonNames([]);
+  };
+
+  const handleUnlock = () => {
+    if (passcode.trim() === "BlackSesame") {
+        setIsPasscodeUnlocked(true);
+    } else {
+        alert("Incorrect Passcode. Hint: It's a small seed!");
+    }
   };
 
   // --- LOGIC: TRAINING ---
@@ -317,6 +330,26 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
           <h5 className="m-0">Step 1: Select Training Data</h5>
         </div>
         <div className="p-3">
+             {/* --- LOCK UI FOR ZONE 4 --- */}
+            {!isStep1Unlocked ? (
+                <div className="text-center p-5 text-muted bg-light rounded border border-2 border-dashed">
+                    <h4 className="mb-3"><FontAwesomeIcon icon={faLock} className="me-2" /> Training Locked</h4>
+                    <p className="mb-3">Please enter the facilitator passcode to begin training.</p>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            style={{ maxWidth: '200px' }}
+                            placeholder="Enter Passcode"
+                            value={passcode}
+                            onChange={(e) => setPasscode(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                        />
+                        <Button variant="primary" onClick={handleUnlock}>Unlock</Button>
+                    </div>
+                </div>
+            ) : (
+            <>
             <Row className="g-3 mb-4">
                 {AVAILABLE_DATASETS.map(ds => (
                     <Col xs={6} md={ds.id === '9' ? 12 : 3} key={ds.id}>
@@ -358,6 +391,8 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
                     />
                 </Col>
             </Row>
+            </>
+            )}
         </div>
       </div>
 
