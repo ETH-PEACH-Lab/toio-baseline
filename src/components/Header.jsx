@@ -1,8 +1,8 @@
-import { Container, Row, Col, Button, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Button, ButtonGroup, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faStar } from '@fortawesome/free-solid-svg-icons';
 
-const Header = ({ activeZone, onZoneChange, zones = [], unlockedIndex = 0 }) => {
+const Header = ({ activeZone, onZoneChange, zones = [], unlockedIndex = 0, score = 0 }) => {
   // If zones prop is not provided, fallback (though App.jsx should provide it)
   const zoneList = zones.length > 0 ? zones : ['Zone 1: Clearview Meadow', 'Zone 2: Azure Coast', 'Zone 3: Whispering Woods', 'Zone 4: Sunrise Desert'];
 
@@ -10,8 +10,16 @@ const Header = ({ activeZone, onZoneChange, zones = [], unlockedIndex = 0 }) => 
     <div className="bg-light border-bottom mb-3 shadow-sm">
       <Container className="py-4">
         <Row>
-          <Col className="text-center">
+          <Col className="text-center position-relative">
             <h1 className="mb-3">Pokémon AI Quest</h1>
+            
+            <div className="position-absolute top-0 end-0 mt-1">
+                <Badge bg="warning" text="dark" className="fs-5 shadow-sm px-3 py-2 rounded-pill">
+                    <FontAwesomeIcon icon={faStar} className="me-2 text-white" />
+                    Score: {score}
+                </Badge>
+            </div>
+
             <ButtonGroup aria-label="Zone selection">
               {zoneList.map((zone, idx) => {
                 const isLocked = idx > unlockedIndex;

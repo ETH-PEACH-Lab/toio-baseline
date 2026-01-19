@@ -15,7 +15,7 @@ import { RULE_ICONS } from '../../data/rules';
 import pokemondata from '../../data/pokemondata.json'; 
 import testPokemon from '../../data/testPokemon'; 
 
-const Zone1 = ({ onNextZone }) => {
+const Zone1 = ({ onNextZone, onScoreUpdate }) => {
   const [droppedRules, setDroppedRules] = useState([null, null, null, null]);
   const [showResults, setShowResults] = useState(false);
   const [testStep, setTestStep] = useState(0);
@@ -177,6 +177,8 @@ const Zone1 = ({ onNextZone }) => {
     // Determine if AI was "Right" based on reality
     const isCorrect = (prediction === "FIRE" && p.CorrectType === 'fire') ||
                       (prediction === "NOT FIRE" && p.CorrectType !== 'fire');
+    
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
 
     setCurrentTestResult({
         ...p, // Spreads Attack, Defense, etc. into the result object

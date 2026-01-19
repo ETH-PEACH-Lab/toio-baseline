@@ -14,7 +14,7 @@ import { RULE_ICONS } from '../../data/rules';
 import pokemondata from '../../data/pokemondata.json'; 
 import testPokemon from '../../data/testPokemon'; 
 
-const Zone2 = ({ onNextZone }) => {
+const Zone2 = ({ onNextZone, onScoreUpdate }) => {
   const [activePage, setActivePage] = useState(1);
   const [showResults, setShowResults] = useState(false);
   const [testStep, setTestStep] = useState(0);
@@ -178,6 +178,9 @@ const Zone2 = ({ onNextZone }) => {
   const handleTest = () => {
     const p = testPokemon[Math.floor(Math.random() * testPokemon.length)];
     const predictionObj = predictType(p);
+    const isCorrect = predictionObj.type === p.CorrectType;
+
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
     
     const breakdown = rulesTypes
       .map(type => {

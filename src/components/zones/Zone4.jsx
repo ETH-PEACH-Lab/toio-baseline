@@ -61,7 +61,7 @@ const AVAILABLE_DATASETS = [
   },
 ];
 
-const Zone4 = ({ onNextZone }) => {
+const Zone4 = ({ onNextZone, onScoreUpdate }) => {
   const [selectedDatasets, setSelectedDatasets] = useState([]); 
   const [trainedWeights, setTrainedWeights] = useState({});
   const [showResults, setShowResults] = useState(false);
@@ -246,6 +246,9 @@ const Zone4 = ({ onNextZone }) => {
 
     scores.sort((a,b) => b.percent - a.percent);
     scores[0].pass = true; // Winner
+
+    const isCorrect = bestType === p.CorrectType;
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
 
     setCurrentTestResult({
         ...p, // <--- CRITICAL FIX: Spreads stats (Attack, Speed...) so card flip works
