@@ -188,7 +188,7 @@ const Zone1 = ({ onNextZone }) => {
         isMatch: isCorrect
     });
 
-    setTestStep(prev => Math.min(prev + 1, 3));
+    setTestStep(prev => Math.min(prev + 1, 2));
   };
 
   return (
@@ -272,7 +272,7 @@ const Zone1 = ({ onNextZone }) => {
           ) : (
             <TestWidget
               mode="zone1" 
-              progress={`${testStep}/3`}
+              progress={`${testStep}/2`}
               pokemon={currentTestResult ? currentTestResult : null} // Pass full object
               rules={currentTestResult ? currentTestResult.rules : []}
               prediction={currentTestResult ? currentTestResult.prediction : ""}
@@ -286,7 +286,7 @@ const Zone1 = ({ onNextZone }) => {
         </Card.Body>
       </Card>
 
-      {testStep >= 3 && (
+      {testStep >= 2 && (
         <div className="text-center py-4 mb-5">
           <Button 
             variant="success" 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Row, Col, Pagination, Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWater, faChevronLeft, faChevronRight, faLock, faArrowRight, faEye, faList } from '@fortawesome/free-solid-svg-icons';
+import { faWater, faChevronLeft, faChevronRight, faLock, faArrowRight, faEye, faList, faCheck, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import RuleWidget from '../RuleWidget';
 import InstructionCard from '../InstructionCard';
 import RulePlate from '../RulePlate';
@@ -209,7 +209,7 @@ const Zone2 = ({ onNextZone }) => {
         isMatch: predictionObj.type === p.CorrectType
     });
 
-    setTestStep(prev => Math.min(prev + 1, 3));
+    setTestStep(prev => Math.min(prev + 1, 2));
   };
 
   return (
@@ -261,7 +261,11 @@ const Zone2 = ({ onNextZone }) => {
               </Col>
             </Row>
 
-            <div className="d-flex justify-content-center mt-3 mb-3">
+            <div className="mt-4 mb-3 p-3 bg-light rounded border border-2 border-primary d-flex flex-column align-items-center shadow-sm">
+              <div className="mb-2 fw-bold text-primary" style={{ fontSize: '1.1rem' }}>
+                  <FontAwesomeIcon icon={faExclamationCircle} className="me-2" />
+                  Configure Rules for ALL 4 Types
+              </div>
               <Pagination className="mb-0">
                 <Pagination.Prev 
                   disabled={activePage === 1}
@@ -269,16 +273,20 @@ const Zone2 = ({ onNextZone }) => {
                 >
                   <FontAwesomeIcon icon={faChevronLeft} />
                 </Pagination.Prev>
-                {rulesTypes.map((rule, idx) => (
-                  <Pagination.Item
-                    key={idx + 1}
-                    active={idx + 1 === activePage}
-                    onClick={() => setActivePage(idx + 1)}
-                    style={{ minWidth: '80px', textAlign: 'center' }}
-                  >
-                    {rule.charAt(0).toUpperCase() + rule.slice(1)}
-                  </Pagination.Item>
-                ))}
+                {rulesTypes.map((rule, idx) => {
+                  const hasRules = zoneRules[rule].some(r => r !== null);
+                  return (
+                    <Pagination.Item
+                        key={idx + 1}
+                        active={idx + 1 === activePage}
+                        onClick={() => setActivePage(idx + 1)}
+                        style={{ minWidth: '100px', textAlign: 'center' }}
+                    >
+                        {rule.charAt(0).toUpperCase() + rule.slice(1)}
+                        {hasRules && <FontAwesomeIcon icon={faCheck} className="ms-2 text-success" />}
+                    </Pagination.Item>
+                  );
+                })}
                 <Pagination.Next 
                   disabled={activePage === totalPages}
                   onClick={() => setActivePage(prev => Math.min(prev + 1, totalPages))}
@@ -286,6 +294,9 @@ const Zone2 = ({ onNextZone }) => {
                   <FontAwesomeIcon icon={faChevronRight} />
                 </Pagination.Next>
               </Pagination>
+              <div className="text-muted small mt-2 fst-italic">
+                 Use the arrows or click the tabs to switch between Pokemon types.
+              </div>
             </div>
             
             <div className="d-flex justify-content-center">
@@ -324,7 +335,7 @@ const Zone2 = ({ onNextZone }) => {
             </div>
           ) : (
           <TestWidget 
-              progress={`${testStep}/3`}
+              progress={`${testStep}/2`}
               // CRITICAL FIX: Pass the full currentTestResult object
               pokemon={currentTestResult} 
               
@@ -340,7 +351,7 @@ const Zone2 = ({ onNextZone }) => {
          </Card.Body>
       </Card>
 
-      {testStep >= 3 && (
+      {testStep >= 2 && (
         <div className="text-center py-4 mb-5">
           <Button 
             variant="success" 

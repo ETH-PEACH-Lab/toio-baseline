@@ -166,7 +166,7 @@ const TestWidget = ({
         return (
             <div className="w-100">
                 <p className="mb-2">
-                    Wonderful! Now, let's open 3 mystery gifts to see if <strong>{botName}</strong> makes the right call every time.
+                    Wonderful! Now, let's open 2 mystery gifts to see if <strong>{botName}</strong> makes the right call every time.
                 </p>
 
                 <div className="text-center p-5 border rounded bg-white shadow-sm d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
@@ -193,7 +193,7 @@ const TestWidget = ({
     return (
         <div className="w-100">
             <p className="mb-2 text-muted fs-5">
-                Wonderful! Now, let's open 3 mystery gifts to see if <strong>{botName}</strong> makes the right call every time.
+                Wonderful! Now, let's open 2 mystery gifts to see if <strong>{botName}</strong> makes the right call every time.
             </p>
 
             <div className="border rounded p-4 bg-white shadow-sm">

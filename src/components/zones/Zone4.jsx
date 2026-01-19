@@ -257,7 +257,7 @@ const Zone4 = ({ onNextZone }) => {
         isMatch: bestType === p.CorrectType
     });
 
-    setTestStep(prev => Math.min(prev + 1, 3));
+    setTestStep(prev => Math.min(prev + 1, 2));
   };
 
   const getVisualizationRules = () => {
@@ -370,7 +370,7 @@ const Zone4 = ({ onNextZone }) => {
             </div>
           ) : (
           <TestWidget 
-              progress={`${testStep}/3`}
+              progress={`${testStep}/2`}
               // CRITICAL FIX: Pass full object for card flip stats
               pokemon={currentTestResult} 
               
@@ -387,7 +387,7 @@ const Zone4 = ({ onNextZone }) => {
          </Card.Body>
       </Card>
 
-      {testStep >= 3 && (
+      {testStep >= 2 && (
         <div className="text-center py-4 mb-5">
           <Button 
             variant="success" 
@@ -401,6 +401,6 @@ const Zone4 = ({ onNextZone }) => {
       )}
     </>
   );
-};
+}; // End of Component
 
 export default Zone4;
