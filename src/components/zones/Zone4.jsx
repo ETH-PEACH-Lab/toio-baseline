@@ -69,6 +69,7 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
   
   const [testStep, setTestStep] = useState(0);
   const [currentTestResult, setCurrentTestResult] = useState(null);
+  const [usedPokemonNames, setUsedPokemonNames] = useState([]);
 
   const isStep2Unlocked = selectedDatasets.length > 0;
   const isStep3Unlocked = showResults;
@@ -89,6 +90,7 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
     // setTrainedWeights({}); // Removed - handled by useEffect
     setTestStep(0);
     setCurrentTestResult(null);
+    setUsedPokemonNames([]);
   };
 
   // --- LOGIC: TRAINING ---
@@ -203,7 +205,12 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
   };
 
   const handleTest = () => {
-    const p = testPokemon[Math.floor(Math.random() * testPokemon.length)];
+    // Filter out already used pokemon to prevent repeats
+    const available = testPokemon.filter(p => !usedPokemonNames.includes(p.name));
+    const pool = available.length > 0 ? available : testPokemon;
+    const p = pool[Math.floor(Math.random() * pool.length)];
+
+    setUsedPokemonNames(prev => [...prev, p.name]);
     
     let bestType = '';
     let maxScore = -Infinity;
@@ -248,7 +255,7 @@ const Zone4 = ({ onNextZone, onScoreUpdate }) => {
     scores[0].pass = true; // Winner
 
     const isCorrect = bestType === p.CorrectType;
-    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true, { ...p, image: p.img });
 
     setCurrentTestResult({
         ...p, // <--- CRITICAL FIX: Spreads stats (Attack, Speed...) so card flip works

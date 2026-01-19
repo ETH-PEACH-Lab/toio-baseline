@@ -180,7 +180,7 @@ const Zone2 = ({ onNextZone, onScoreUpdate }) => {
     const predictionObj = predictType(p);
     const isCorrect = predictionObj.type === p.CorrectType;
 
-    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true, { ...p, image: p.img });
     
     const breakdown = rulesTypes
       .map(type => {

@@ -19,6 +19,7 @@ function App() {
   const [activeZone, setActiveZone] = useState(ZONES[0])
   const [unlockedIndex, setUnlockedIndex] = useState(0);
   const [globalScore, setGlobalScore] = useState(0);
+  const [caughtPokemon, setCaughtPokemon] = useState([]); // Store caught pokemon
 
   const handleZoneComplete = (nextIndex) => {
     if (nextIndex >= ZONES.length) {
@@ -33,10 +34,16 @@ function App() {
       setActiveZone(ZONES[0]);
       setUnlockedIndex(0);
       setGlobalScore(0);
+      setCaughtPokemon([]);
   };
 
-  const handleScoreUpdate = (correct) => {
-      if (correct) setGlobalScore(prev => prev + 1);
+  const handleScoreUpdate = (correct, pokemon = null) => {
+      if (correct) {
+          setGlobalScore(prev => prev + 1);
+          if (pokemon) {
+              setCaughtPokemon(prev => [...prev, pokemon]);
+          }
+      }
   };
 
   const renderZone = () => {
@@ -50,7 +57,7 @@ function App() {
       case ZONES[3]:
         return <Zone4 onNextZone={() => handleZoneComplete(4)} onScoreUpdate={handleScoreUpdate} />
       case 'Ending':
-        return <EndingPage score={globalScore} onRestart={handleRestart} />
+        return <EndingPage score={globalScore} caughtPokemon={caughtPokemon} onRestart={handleRestart} />
       default:
         // Fallback or handle partial matches if needed (e.g. just "Zone 1")
         return <Zone1 onNextZone={() => handleZoneComplete(1)} onScoreUpdate={handleScoreUpdate} />

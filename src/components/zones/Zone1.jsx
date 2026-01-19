@@ -178,7 +178,7 @@ const Zone1 = ({ onNextZone, onScoreUpdate }) => {
     const isCorrect = (prediction === "FIRE" && p.CorrectType === 'fire') ||
                       (prediction === "NOT FIRE" && p.CorrectType !== 'fire');
     
-    if (isCorrect && onScoreUpdate) onScoreUpdate(true);
+    if (isCorrect && onScoreUpdate) onScoreUpdate(true, { ...p, image: p.img });
 
     setCurrentTestResult({
         ...p, // Spreads Attack, Defense, etc. into the result object
