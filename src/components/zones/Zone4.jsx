@@ -41,7 +41,19 @@ const AVAILABLE_DATASETS = [
   { id: '6', type: 'water', label: 'Water (Rare!)', img: img6, data: trainPokemon.slice(60, 80) },
   
   { id: '3', type: 'grass', label: 'Grass (Professor)', img: img3, data: trainPokemon.slice(80, 100) },
-  { id: '7', type: 'grass', label: 'Grass (Meowth)', img: img7, data: trainPokemon.slice(100, 120) },
+  { 
+    id: '7', 
+    type: 'grass', 
+    label: 'Grass (Meowth)', 
+    img: img7, 
+    data: trainPokemon.slice(100, 120).map(p => ({
+        ...p,
+        // Manual tweak: Average data in this slice results in 0 weight, 
+        // essentially acting as "no signal". We shift it slightly to show *some* pattern.
+        Attack: Math.min(10, p.Attack + 2),
+        Defense: Math.max(0, p.Defense - 2)
+    })) 
+  },
   
   { id: '4', type: 'dragon', label: 'Dragon (Professor)', img: img4, data: trainPokemon.slice(120, 140) },
   { id: '8', type: 'dragon', label: 'Dragon (Rare!)', img: img8, data: trainPokemon.slice(140, 160) },
